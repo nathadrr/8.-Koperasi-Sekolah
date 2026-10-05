@@ -1,14 +1,14 @@
 <?php
+namespace App\Http\Controllers\Admin;
 
-namespace App\Http\Controllers;
-
-use App\Models\Product;
+use App\Http\Controllers\Controller;
 use App\Models\Transaction;
 use App\Models\TransactionDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class TransactionController extends Controller {
+class TransactionController extends Controller
+{
     public function checkout(Request $request) {
         $userId = $request->user()->getAuthIdentifier();
         DB::transaction(function () use ($request, $userId) {

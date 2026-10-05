@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Public\CatalogController;
 use App\Http\Controllers\Admin\InventoryController;
-use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\Admin\TransactionController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -31,19 +31,23 @@ Route::middleware(['auth'])->group(function () {
     // GROUP KHUSUS ADMIN
     // prefix('admin') -> url menjadi /admin/...
     // name('admin.') -> route menjadi admin.inventory.index, dll.
-    Route::prefix('admin')->name('admin.')->group(function () {
-        
-        // Dashboard khusus admin
-        Route::get('/dashboard', function () {
-            return view('admin.dashboard');
-        })->name('dashboard');
+   Route::prefix('admin')
+    ->name('admin.')
+    ->middleware('admin')
+    ->group(function () {
 
-        // Resource untuk Inventory (index, create, store, edit, update, destroy)
-        Route::resource('inventory', InventoryController::class);
-        
-        // Laporan Penjualan
-        Route::get('reports', [TransactionController::class, 'report'])->name('reports');
-    });
+    // Dashboard khusus admin
+    Route::get('/dashboard', function () {
+        return view('admin.dashboard');
+    })->name('dashboard');
+
+    // Inventory
+    Route::resource('inventory', InventoryController::class);
+
+    // Laporan Penjualan
+    Route::get('reports', [TransactionController::class, 'report'])
+        ->name('reports');
+});
 
     // ROUTE USER / SISWA / ORANG TUA
     // Proses pembayaran/checkout
