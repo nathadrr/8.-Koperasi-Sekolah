@@ -94,7 +94,7 @@
                     </p>
                 @enderror
             </div>
-
+            
             <!-- CONFIRM PASSWORD -->
             <div class="mt-5">
                 <label for="password_confirmation" class="block text-sm font-semibold text-gray-700 mb-2">
@@ -118,6 +118,18 @@
                 @enderror
             </div>
 
+            <!-- Tambahkan ini di atas bagian Confirm Password atau sebelum tombol Register -->
+            <div class="mt-4">
+                <label for="role" class="block font-medium text-sm text-gray-700">Daftar Sebagai</label>
+                <select id="role" name="role" class="block mt-1 w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-md shadow-sm text-sm py-2" required>
+                    <option value="student">Siswa / Orang Tua</option>
+                    <option value="admin">Administrator</option>
+                </select>
+                <!-- Pesan Error (jika ada) -->
+                @error('role')
+                    <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
+                @enderror
+            </div>
             <!-- BUTTON -->
             <button
                 type="submit"
