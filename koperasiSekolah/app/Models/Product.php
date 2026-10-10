@@ -2,13 +2,25 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Product extends Model {
-    protected $fillable = ['category_id', 'name', 'description', 'price', 'stock', 'image'];
+class Product extends Model
+{
+    use HasFactory;
 
-    public function category() {
+    protected $fillable = [
+        'category_id',
+        'name',
+        'description',
+        'price',
+        'stock',
+        'image',
+    ];
+
+    // Relasi: Satu produk milik satu kategori
+    public function category()
+    {
         return $this->belongsTo(Category::class);
     }
 }
-

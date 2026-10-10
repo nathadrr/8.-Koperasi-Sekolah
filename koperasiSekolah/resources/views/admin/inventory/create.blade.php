@@ -9,7 +9,12 @@
 <body class="bg-gray-50 text-gray-900 antialiased py-10">
     <div class="max-w-2xl mx-auto px-4">
         <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
-            <h1 class="text-xl font-bold text-gray-900 mb-6">Tambah Barang Baru</h1>
+            <div class="flex items-center justify-between mb-6">
+                <h1 class="text-xl font-bold text-gray-900">Tambah Barang Baru</h1>
+                <a href="{{ route('admin.categories.index') }}" class="text-xs font-semibold text-blue-600 hover:underline">
+                    + Kelola / Buat Kategori
+                </a>
+            </div>
 
             <form action="{{ route('admin.inventory.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5">
                 @csrf
@@ -22,11 +27,14 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
                         <select name="category_id" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white">
-                            <option value="">Pilih Kategori</option>
+                            <option value="">-- Pilih Kategori --</option>
                             @foreach($categories as $category)
                                 <option value="{{ $category->id }}">{{ $category->name }}</option>
                             @endforeach
                         </select>
+                        @if($categories->isEmpty())
+                            <p class="text-xs text-red-500 mt-1">Kategori belum ada. <a href="{{ route('admin.categories.index') }}" class="underline font-bold">Buat di sini</a>.</p>
+                        @endif
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Stok Awal</label>
