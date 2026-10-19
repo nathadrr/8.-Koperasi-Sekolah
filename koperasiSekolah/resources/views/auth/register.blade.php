@@ -123,7 +123,7 @@
                 <label for="role" class="block font-medium text-sm text-gray-700">Daftar Sebagai</label>
                 <select id="role" name="role" class="block mt-1 w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-md shadow-sm text-sm py-2" required>
                     <option value="student">Siswa / Orang Tua</option>
-                    <option value="admin">Administrator</option>
+                    <!--  <option value="admin">Administrator</option> -->
                 </select>
                 <!-- Pesan Error (jika ada) -->
                 @error('role')

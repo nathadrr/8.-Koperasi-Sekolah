@@ -10,10 +10,26 @@ use Illuminate\Support\Facades\Storage;
 
 class InventoryController extends Controller
 {
-    // Menampilkan daftar produk (Dashboard Admin)
-    public function index()
+    // Menampilkan daftar produk (Dashboard Admin) + Fitur Search
+    public function index(Request $request)
     {
-        $products = Product::with('category')->latest()->paginate(10);
+        $query = Product::with('category');
+
+        // Fitur Pencarian untuk Admin
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhereHas('category', function ($catQuery) use ($search) {
+                      $catQuery->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // withQueryString() memastikan keyword pencarian tidak hilang saat navigasi halaman pagination
+        $products = $query->latest()->paginate(10)->withQueryString();
+
         return view('admin.inventory.index', compact('products'));
     }
 
