@@ -54,13 +54,6 @@
                             Riwayat Belanja
                         </a>
 
-                        <div class="flex items-center gap-3 pl-2 border-l border-gray-200">
-                            @if(Auth::user()->role === 'admin')
-                                <a href="{{ route('admin.dashboard') }}" class="text-xs font-semibold text-white bg-blue-600 px-3 py-1.5 rounded-lg hover:bg-blue-700 transition">
-                                    Panel Admin
-                                </a>
-                            @endif
-
                             <span class="text-sm font-semibold text-blue-700 bg-blue-50 px-4 py-2 rounded-full border border-blue-100">
                                 👤 {{ Auth::user()->name }}
                             </span>

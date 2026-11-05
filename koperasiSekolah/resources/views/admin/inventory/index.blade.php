@@ -10,30 +10,37 @@
 </head>
 <body class="bg-gray-50 flex h-screen overflow-hidden text-gray-900">
 
-    <!-- Sidebar Admin Konsisten -->
+    <!-- Sidebar Admin -->
     <aside class="w-64 bg-white border-r border-gray-200 flex flex-col shrink-0">
         <div class="h-16 flex items-center px-6 border-b border-gray-200">
             <span class="text-lg font-bold text-blue-800">Admin Panel</span>
         </div>
         <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-            <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-lg font-medium">Dashboard</a>
-            <a href="{{ route('admin.inventory.index') }}" class="flex items-center gap-3 px-3 py-2 bg-blue-50 text-blue-700 rounded-lg font-medium">Data Produk</a>
-            <a href="{{ route('admin.categories.index') }}" class="flex items-center gap-3 px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-lg font-medium">Kelola Kategori</a>
-            <a href="{{ route('admin.reports') }}" class="flex items-center gap-3 px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-lg font-medium">Data Transaksi</a>
+            <a href="{{ route('admin.inventory.index') }}" class="flex items-center gap-3 px-3 py-2.5 bg-blue-50 text-blue-700 rounded-lg font-medium shadow-sm">
+                📦 Data Produk
+            </a>
+            <a href="{{ route('admin.categories.index') }}" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-100 rounded-lg font-medium">
+                🏷️ Kelola Kategori
+            </a>
+            <a href="{{ route('admin.reports') }}" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-100 rounded-lg font-medium">
+                📋 Data Transaksi
+            </a>
         </nav>
         <div class="p-4 border-t border-gray-200">
-            <form method="POST" action="{{ route('logout') }}">
+            <form method="POST" action="{{ route('logout') }}" class="m-0">
                 @csrf
-                <button type="submit" class="w-full text-left px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg font-medium">Logout</button>
+                <button type="submit" class="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg font-medium transition">
+                    🚪 Logout
+                </button>
             </form>
         </div>
     </aside>
 
-    <!-- Konten Utama -->
+    <!-- Konten Utama Admin -->
     <main class="flex-1 flex flex-col h-screen overflow-y-auto bg-gray-50">
         <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 shrink-0">
             <h1 class="text-xl font-semibold text-gray-800">Data Produk / Inventory</h1>
-            <a href="{{ route('admin.inventory.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition shadow-sm">
+            <a href="{{ route('admin.inventory.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-blue-700 transition shadow-sm">
                 + Tambah Barang Baru
             </a>
         </header>
@@ -44,32 +51,6 @@
                     {{ session('success') }}
                 </div>
             @endif
-
-            <!-- Form Search Tailwind CSS -->
-            <div class="mb-6 bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
-                <form action="{{ route('admin.inventory.index') }}" method="GET" class="flex gap-3">
-                    <div class="relative flex-1">
-                        <input 
-                            type="text" 
-                            name="search" 
-                            placeholder="Cari nama barang, deskripsi, atau kategori..." 
-                            value="{{ request('search') }}"
-                            class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
-                        >
-                        <svg class="w-5 h-5 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                        </svg>
-                    </div>
-                    <button type="submit" class="bg-gray-800 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-gray-900 transition">
-                        Cari
-                    </button>
-                    @if(request('search'))
-                        <a href="{{ route('admin.inventory.index') }}" class="bg-gray-100 text-gray-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition flex items-center">
-                            Reset
-                        </a>
-                    @endif
-                </form>
-            </div>
 
             <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
                 <table class="w-full text-left border-collapse">
@@ -109,13 +90,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="6" class="py-12 text-center text-gray-500">
-                                @if(request('search'))
-                                    Data barang dengan kata kunci "<span class="font-semibold">{{ request('search') }}</span>" tidak ditemukan.
-                                @else
-                                    Belum ada data barang. Silakan tambah barang baru.
-                                @endif
-                            </td>
+                            <td colspan="6" class="py-12 text-center text-gray-500">Belum ada data barang. Silakan tambah barang baru.</td>
                         </tr>
                         @endforelse
                     </tbody>
