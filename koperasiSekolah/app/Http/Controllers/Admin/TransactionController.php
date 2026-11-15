@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Transaction;
 use App\Models\Product;
+use App\Services\MidtransPaymentStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -50,7 +51,7 @@ class TransactionController extends Controller
     // Menampilkan Laporan Penjualan & Data Transaksi di Panel Admin
     public function report(Request $request)
     {
-        $query = Transaction::with(['user', 'product'])->latest();
+        $query = Transaction::with(['user', 'product', 'details.product'])->latest();
 
         // Filter berdasarkan Status
         if ($request->has('status') && $request->status != '') {
@@ -85,9 +86,14 @@ class TransactionController extends Controller
 
         // Jika transaksi dibatalkan, kembalikan stok barang
         if ($newStatus === 'cancelled' && $oldStatus !== 'cancelled') {
-            $product = $transaction->product;
-            if ($product) {
-                $product->increment('stock', $transaction->quantity);
+            $details = $transaction->details;
+
+            if ($details->isNotEmpty()) {
+                foreach ($details as $detail) {
+                    $detail->product?->increment('stock', $detail->quantity);
+                }
+            } elseif ($transaction->product) {
+                $transaction->product->increment('stock', $transaction->quantity);
             }
         }
 
@@ -97,9 +103,11 @@ class TransactionController extends Controller
     }
 
     // Menampilkan Riwayat Belanja Pengguna Aktif
-    public function userHistory(Request $request)
+    public function userHistory(Request $request, MidtransPaymentStatus $paymentStatus)
     {
-        $transactions = Transaction::with('product.category')
+        $paymentStatus->syncPendingForUser($request->user());
+
+        $transactions = Transaction::with(['product.category', 'details.product'])
             ->where('user_id', $request->user()->getAuthIdentifier())
             ->latest()
             ->paginate(10);

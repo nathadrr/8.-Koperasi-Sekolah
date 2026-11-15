@@ -10,6 +10,8 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        $this->call(CatalogSeeder::class);
+
         // 1. Akun khusus Admin (Dipisah)
         User::create([
             'name' => 'Administrator Koperasi',

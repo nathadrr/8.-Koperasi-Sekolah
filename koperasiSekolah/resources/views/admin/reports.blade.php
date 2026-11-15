@@ -116,8 +116,13 @@
                                 <span class="text-xs text-gray-500">{{ $trx->buyer_class ?? 'Siswa' }}</span>
                             </td>
                             <td class="py-4 px-6">
-                                <span class="font-medium text-gray-900 block">{{ $trx->product->name ?? 'Produk Dihapus' }}</span>
-                                <span class="text-xs text-gray-500">{{ $trx->quantity }} unit x Rp {{ number_format($trx->product->price ?? 0, 0, ',', '.') }}</span>
+                                @forelse($trx->details as $detail)
+                                    <span class="font-medium text-gray-900 block">{{ $detail->product->name ?? 'Produk Dihapus' }}</span>
+                                    <span class="text-xs text-gray-500 block">{{ $detail->quantity }} unit x Rp {{ number_format($detail->unit_price, 0, ',', '.') }}</span>
+                                @empty
+                                    <span class="font-medium text-gray-900 block">{{ $trx->product->name ?? 'Produk Dihapus' }}</span>
+                                    <span class="text-xs text-gray-500">{{ $trx->quantity }} unit x Rp {{ number_format($trx->product->price ?? 0, 0, ',', '.') }}</span>
+                                @endforelse
                             </td>
                             <td class="py-4 px-6 font-bold text-gray-900">
                                 Rp {{ number_format($trx->total_price, 0, ',', '.') }}

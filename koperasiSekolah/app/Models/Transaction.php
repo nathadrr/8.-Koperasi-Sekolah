@@ -31,4 +31,14 @@ class Transaction extends Model
     {
         return $this->belongsTo(Product::class);
     }
+
+    public function details()
+    {
+        return $this->hasMany(TransactionDetail::class);
+    }
+
+    public function paymentAttempts()
+    {
+        return $this->hasMany(TransactionPaymentAttempt::class);
+    }
 }

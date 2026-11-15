@@ -60,7 +60,7 @@
                 <div class="space-y-3 text-sm mb-6">
                     <div class="flex justify-between text-gray-600">
                         <span>Metode Pembayaran</span>
-                        <span class="font-semibold text-gray-900">Tunai (Di Koperasi)</span>
+                        <span class="font-semibold text-gray-900">Pilih metode di bawah</span>
                     </div>
                     <div class="border-t border-gray-100 pt-3 flex justify-between font-bold text-gray-900 text-base">
                         <span>Total Bayar</span>
@@ -68,12 +68,80 @@
                     </div>
                 </div>
 
-                <form action="{{ route('cart.checkout') }}" method="POST">
+                <form action="{{ route('cart.checkout') }}" method="POST" class="mb-3">
                     @csrf
                     <button type="submit" class="w-full bg-gray-900 text-white font-semibold py-3 rounded-xl hover:bg-blue-600 transition text-sm shadow-md">
-                        Konfirmasi Pesanan
+                        Pesan dan Bayar Tunai
                     </button>
                 </form>
+
+                @if(config('services.midtrans.client_key'))
+                    <button id="pay-button" type="button" class="w-full bg-blue-600 text-white font-semibold py-3 rounded-xl hover:bg-blue-700 transition text-sm shadow-md">
+                        Bayar dengan Midtrans
+                    </button>
+                    <p id="payment-message" class="mt-3 text-center text-sm text-gray-600" role="status" aria-live="polite"></p>
+                    <a id="history-link" href="{{ route('history.index') }}" class="hidden mt-2 text-center text-sm font-semibold text-blue-600 hover:underline">
+                        Lihat riwayat pesanan
+                    </a>
+                    <script
+                        src="{{ config('services.midtrans.is_production') ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js' }}"
+                        data-client-key="{{ config('services.midtrans.client_key') }}">
+                    </script>
+                    <script>
+                        const payButton = document.getElementById('pay-button');
+                        const paymentMessage = document.getElementById('payment-message');
+                        const historyLink = document.getElementById('history-link');
+
+                        payButton.addEventListener('click', async () => {
+                            payButton.disabled = true;
+                            paymentMessage.textContent = 'Menyiapkan pembayaran...';
+                            let orderCreated = false;
+
+                            try {
+                                if (!window.snap) {
+                                    throw new Error('Layanan pembayaran belum siap. Silakan muat ulang halaman.');
+                                }
+
+                                const response = await fetch(@json(route('midtrans.token')), {
+                                    method: 'POST',
+                                    headers: {
+                                        'Accept': 'application/json',
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': @json(csrf_token()),
+                                    },
+                                });
+                                const data = await response.json();
+
+                                if (!response.ok || !data.success || !data.token) {
+                                    throw new Error(data.message || 'Gagal membuat transaksi.');
+                                }
+
+                                orderCreated = true;
+                                window.snap.pay(data.token, {
+                                    onSuccess: () => window.location.assign(@json(route('history.index'))),
+                                    onPending: () => window.location.assign(@json(route('history.index'))),
+                                    onError: () => {
+                                        paymentMessage.textContent = 'Pembayaran gagal. Silakan coba kembali dari riwayat pesanan.';
+                                        historyLink.classList.remove('hidden');
+                                    },
+                                    onClose: () => {
+                                        paymentMessage.textContent = 'Pembayaran belum selesai. Status pesanan dapat dilihat di riwayat.';
+                                        historyLink.classList.remove('hidden');
+                                    },
+                                });
+                            } catch (error) {
+                                paymentMessage.textContent = error.message || 'Terjadi kesalahan saat menyiapkan pembayaran.';
+                                if (orderCreated) {
+                                    historyLink.classList.remove('hidden');
+                                } else {
+                                    payButton.disabled = false;
+                                }
+                            }
+                        });
+                    </script>
+                @else
+                    <p class="mt-3 text-center text-sm text-gray-500">Pembayaran online belum tersedia.</p>
+                @endif
             </div>
 
         </div>

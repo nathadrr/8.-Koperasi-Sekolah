@@ -8,6 +8,8 @@ use App\Http\Controllers\Admin\InventoryController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\MidtransController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -18,6 +20,8 @@ use App\Http\Controllers\ProfileController;
 // 1. ROUTE PUBLIK
 Route::get('/', [CatalogController::class, 'home'])->name('home');
 Route::get('/explore', [CatalogController::class, 'index'])->name('explore');
+Route::post('/midtrans/notification', [MidtransController::class, 'notification'])
+    ->name('midtrans.notification');
 
 // 2. AUTH ROUTES (Laravel Breeze / Fortify)
 require __DIR__.'/auth.php';
@@ -65,4 +69,9 @@ Route::middleware(['auth'])->group(function () {
             Route::get('reports', [TransactionController::class, 'report'])->name('reports');
             Route::patch('transactions/{transaction}/status', [TransactionController::class, 'updateStatus'])->name('transactions.updateStatus');
         });
+
+    Route::post('/midtrans/token', [MidtransController::class, 'createTransaction'])
+        ->name('midtrans.token');
+    Route::post('/midtrans/retry/{transaction}', [MidtransController::class, 'retryPayment'])
+        ->name('midtrans.retry');
 });
