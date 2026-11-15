@@ -26,43 +26,41 @@
         <div class="w-full px-4 sm:px-6 lg:px-10">
             <div class="flex justify-between h-16 items-center">
                 
-                <a href="{{ route('home') }}" class="text-xl font-bold tracking-tight text-blue-900 shrink-0">
+                <a href="{{ Auth::check() && Auth::user()->role === 'admin' ? route('admin.dashboard') : route('home') }}" class="text-xl font-bold tracking-tight text-blue-900 shrink-0">
                     St. Agnes Coop.
                 </a>
                 
-                <div class="hidden md:flex space-x-8 items-center ml-10">
-                    <a href="{{ route('home') }}" class="text-sm font-semibold {{ request()->routeIs('home') ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-600 hover:text-gray-900' }} py-1 transition">Home</a>
-                    <a href="{{ route('explore') }}" class="text-sm font-semibold {{ request()->routeIs('explore') ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-600 hover:text-gray-900' }} py-1 transition">Explore</a>
-                    <a href="{{ route('home') }}#about" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition">About</a>
-                    <a href="{{ route('home') }}#contact" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition">Contact</a>
-                </div>
+                @if(!Auth::check() || Auth::user()->role !== 'admin')
+                    <div class="hidden md:flex space-x-8 items-center ml-10">
+                        <a href="{{ route('home') }}" class="text-sm font-semibold {{ request()->routeIs('home') ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-600 hover:text-gray-900' }} py-1 transition">Home</a>
+                        <a href="{{ route('explore') }}" class="text-sm font-semibold {{ request()->routeIs('explore') ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-600 hover:text-gray-900' }} py-1 transition">Explore</a>
+                        <a href="{{ route('home') }}#about" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition">About</a>
+                        <a href="{{ route('home') }}#contact" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition">Contact</a>
+                    </div>
+                @endif
 
                 <div class="hidden md:flex items-center space-x-4 ml-auto">
                     @auth
-                        <!-- Ikon Keranjang Belanja -->
-                        <a href="{{ route('cart.index') }}" class="relative p-2 text-gray-700 hover:text-blue-600 transition" title="Keranjang Belanja">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                            @if(count(session('cart', [])) > 0)
-                                <span class="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                                    {{ count(session('cart', [])) }}
-                                </span>
-                            @endif
-                        </a>
-
-                        <!-- Link Riwayat Belanja -->
-                        <a href="{{ route('history.index') }}" class="text-sm font-medium {{ request()->routeIs('history.index') ? 'text-blue-600 font-semibold' : 'text-gray-600 hover:text-gray-900' }} transition">
-                            Riwayat Belanja
-                        </a>
-
-                            <span class="text-sm font-semibold text-blue-700 bg-blue-50 px-4 py-2 rounded-full border border-blue-100">
-                                👤 {{ Auth::user()->name }}
-                            </span>
-                            
-                            <form method="POST" action="{{ route('logout') }}" class="m-0">
-                                @csrf
-                                <button type="submit" class="text-sm font-medium text-red-500 hover:text-red-700 transition">Logout</button>
-                            </form>
-                        </div>
+                        @if(Auth::user()->role === 'admin')
+                            <a href="{{ route('admin.dashboard') }}" class="text-sm font-semibold text-blue-700 hover:text-blue-800">Panel Admin</a>
+                        @else
+                            <a href="{{ route('cart.index') }}" class="relative p-2 text-gray-700 hover:text-blue-600 transition" title="Keranjang Belanja">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                @if(count(session('cart', [])) > 0)
+                                    <span class="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                                        {{ count(session('cart', [])) }}
+                                    </span>
+                                @endif
+                            </a>
+                            <a href="{{ route('history.index') }}" class="text-sm font-medium {{ request()->routeIs('history.index') ? 'text-blue-600 font-semibold' : 'text-gray-600 hover:text-gray-900' }} transition">
+                                Riwayat Belanja
+                            </a>
+                        @endif
+                        <span class="text-sm font-semibold text-blue-700 bg-blue-50 px-4 py-2 rounded-full border border-blue-100">👤 {{ Auth::user()->name }}</span>
+                        <form method="POST" action="{{ route('logout') }}" class="m-0">
+                            @csrf
+                            <button type="submit" class="text-sm font-medium text-red-500 hover:text-red-700 transition">Logout</button>
+                        </form>
                     @else
                         <a href="{{ route('login') }}" class="text-sm font-medium text-gray-900 hover:text-blue-600 transition">Login</a>
                         <a href="{{ route('register') }}" class="text-sm font-medium bg-gray-900 text-white px-5 py-2 rounded-full hover:bg-blue-600 transition shadow-md">Sign Up</a>
@@ -82,28 +80,30 @@
 
         <div x-show="open" class="md:hidden bg-white/95 backdrop-blur-xl border-b border-gray-100 absolute w-full shadow-lg">
             <div class="px-4 pt-2 pb-6 space-y-2">
-                <a href="{{ route('home') }}" class="block px-3 py-3 text-base font-medium text-gray-900 hover:bg-gray-50 rounded-lg">Home</a>
-                <a href="{{ route('explore') }}" class="block px-3 py-3 text-base font-medium text-gray-900 hover:bg-gray-50 rounded-lg">Explore</a>
-                <a href="{{ route('home') }}#about" class="block px-3 py-3 text-base font-medium text-gray-600 hover:bg-gray-50 rounded-lg">About</a>
-                <a href="{{ route('home') }}#contact" class="block px-3 py-3 text-base font-medium text-gray-600 hover:bg-gray-50 rounded-lg">Contact</a>
+                @if(!Auth::check() || Auth::user()->role !== 'admin')
+                    <a href="{{ route('home') }}" class="block px-3 py-3 text-base font-medium text-gray-900 hover:bg-gray-50 rounded-lg">Home</a>
+                    <a href="{{ route('explore') }}" class="block px-3 py-3 text-base font-medium text-gray-900 hover:bg-gray-50 rounded-lg">Explore</a>
+                    <a href="{{ route('home') }}#about" class="block px-3 py-3 text-base font-medium text-gray-600 hover:bg-gray-50 rounded-lg">About</a>
+                    <a href="{{ route('home') }}#contact" class="block px-3 py-3 text-base font-medium text-gray-600 hover:bg-gray-50 rounded-lg">Contact</a>
+                @endif
                 
                 <div class="border-t border-gray-200 pt-4 mt-2">
                     @auth
-                        <a href="{{ route('cart.index') }}" class="block px-3 py-2.5 text-base font-medium text-gray-900 hover:bg-gray-50 rounded-lg flex items-center justify-between">
-                            <span>🛒 Keranjang Belanja</span>
-                            @if(count(session('cart', [])) > 0)
-                                <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                                    {{ count(session('cart', [])) }}
-                                </span>
-                            @endif
-                        </a>
-                        <a href="{{ route('history.index') }}" class="block px-3 py-2.5 text-base font-medium text-gray-900 hover:bg-gray-50 rounded-lg">
-                            📜 Riwayat Belanja
-                        </a>
-
                         @if(Auth::user()->role === 'admin')
                             <a href="{{ route('admin.dashboard') }}" class="block px-3 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-lg my-2 text-center">
                                 Panel Admin
+                            </a>
+                        @else
+                            <a href="{{ route('cart.index') }}" class="block px-3 py-2.5 text-base font-medium text-gray-900 hover:bg-gray-50 rounded-lg flex items-center justify-between">
+                                <span>🛒 Keranjang Belanja</span>
+                                @if(count(session('cart', [])) > 0)
+                                    <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                                        {{ count(session('cart', [])) }}
+                                    </span>
+                                @endif
+                            </a>
+                            <a href="{{ route('history.index') }}" class="block px-3 py-2.5 text-base font-medium text-gray-900 hover:bg-gray-50 rounded-lg">
+                                📜 Riwayat Belanja
                             </a>
                         @endif
                         <div class="block px-3 py-2 text-base font-semibold text-blue-700 bg-blue-50 rounded-lg my-2">

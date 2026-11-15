@@ -1,66 +1,105 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Koperasi St. Agnes</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@yield('title', 'Admin') - Koperasi St. Agnes</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #FBFBFC; }
-        .sidebar-item:hover { background-color: #F3F4F6; color: #2563EB; }
-        .sidebar-item.active { background-color: #EFF6FF; color: #2563EB; font-weight: 600; }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Plus Jakarta Sans', sans-serif; }</style>
 </head>
-<body class="text-gray-800">
-    <div class="flex min-h-screen">
-        <!-- SIDEBAR NAVIGATION -->
-        <aside class="w-72 bg-white border-r border-gray-100 flex flex-col sticky top-0 h-screen">
-            <div class="p-8">
-                <h1 class="text-xl font-bold text-blue-600 tracking-tight">Koperasi <span class="text-gray-400">Admin</span></h1>
-            </div>
+<body class="min-h-screen bg-slate-50 text-slate-800 antialiased">
+    <div class="min-h-screen md:flex">
+        <aside class="flex w-full shrink-0 flex-col border-b border-slate-200 bg-white md:sticky md:top-0 md:h-screen md:w-64 md:border-b-0 md:border-r">
+            <a href="{{ route('admin.dashboard') }}" class="flex h-16 items-center gap-3 border-b border-slate-100 px-5">
+                <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 text-sm font-bold text-white">K</span>
+                <span>
+                    <span class="block text-sm font-bold text-slate-900">Koperasi</span>
+                    <span class="block text-xs text-slate-500">Panel Admin</span>
+                </span>
+            </a>
 
-            <nav class="flex-1 px-4 space-y-8">
-                <!-- Section 1: Inventory -->
-                <div>
-                    <p class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Inventory</p>
-                    <div class="space-y-1">
-                        <a href="{{ route('admin.inventory.index') }}" class="sidebar-item flex items-center px-4 py-3 rounded-2xl transition-all {{ request()->routeIs('admin.inventory.*') ? 'active' : '' }}">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
-                            Kategori Barang
-                        </a>
-                        <a href="#" class="sidebar-item flex items-center px-4 py-3 rounded-2xl transition-all">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
-                            Jenis Barang
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Section 2: Transaction -->
-                <div>
-                    <p class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Finance</p>
-                    <div class="space-y-1">
-                        <a href="{{ route('admin.reports') }}" class="sidebar-item flex items-center px-4 py-3 rounded-2xl transition-all {{ request()->routeIs('admin.reports') ? 'active' : '' }}">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            Detail Transaksi
-                        </a>
-                    </div>
-                </div>
+            <nav class="flex flex-1 gap-1 overflow-x-auto p-3 md:block md:space-y-1 md:overflow-y-auto">
+                <a href="{{ route('admin.dashboard') }}" @class([
+                    'flex shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition',
+                    'bg-blue-50 text-blue-700' => request()->routeIs('admin.dashboard'),
+                    'text-slate-600 hover:bg-slate-100 hover:text-slate-900' => !request()->routeIs('admin.dashboard'),
+                ])>
+                    <span aria-hidden="true">⌂</span> Dashboard
+                </a>
+                <a href="{{ route('admin.inventory.index') }}" @class([
+                    'flex shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition',
+                    'bg-blue-50 text-blue-700' => request()->routeIs('admin.inventory.*'),
+                    'text-slate-600 hover:bg-slate-100 hover:text-slate-900' => !request()->routeIs('admin.inventory.*'),
+                ])>
+                    <span aria-hidden="true">▦</span> Produk
+                </a>
+                <a href="{{ route('admin.categories.index') }}" @class([
+                    'flex shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition',
+                    'bg-blue-50 text-blue-700' => request()->routeIs('admin.categories.*'),
+                    'text-slate-600 hover:bg-slate-100 hover:text-slate-900' => !request()->routeIs('admin.categories.*'),
+                ])>
+                    <span aria-hidden="true">▤</span> Kategori
+                </a>
+                <a href="{{ route('admin.reports') }}" @class([
+                    'flex shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition',
+                    'bg-blue-50 text-blue-700' => request()->routeIs('admin.reports'),
+                    'text-slate-600 hover:bg-slate-100 hover:text-slate-900' => !request()->routeIs('admin.reports'),
+                ])>
+                    <span aria-hidden="true">▥</span> Transaksi
+                </a>
             </nav>
 
-            <div class="p-6 border-t border-gray-50">
+            <div class="hidden border-t border-slate-100 p-3 md:block">
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button class="flex items-center w-full px-4 py-3 text-sm font-medium text-red-500 hover:bg-red-50 rounded-2xl transition-all">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                    <button type="submit" class="w-full rounded-xl px-3 py-2.5 text-left text-sm font-medium text-rose-600 transition hover:bg-rose-50">
                         Keluar
                     </button>
                 </form>
             </div>
         </aside>
 
-        <!-- MAIN CONTENT -->
-        <div class="flex-1 flex flex-col">
-            <!-- TOP BAR -->
-            <header class="h-20 bg-white/80 backdrop-blur-md border-b border-gray-100 px-8 flex justify-between items-center sticky top-0 z-10">
-                <h2 class="text-lg font-semibold text*
+        <main class="min-w-0 flex-1">
+            <header class="sticky top-0 z-10 flex min-h-16 items-center justify-between gap-4 border-b border-slate-200 bg-white/95 px-4 backdrop-blur sm:px-6 lg:px-8">
+                <div>
+                    <p class="text-xs font-medium text-slate-500">Koperasi SMPK St. Agnes</p>
+                    <h1 class="text-base font-semibold text-slate-900 sm:text-lg">@yield('page-title', 'Dashboard')</h1>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="hidden text-sm text-slate-600 sm:inline">{{ Auth::user()->name }}</span>
+                    <form method="POST" action="{{ route('logout') }}" class="sm:hidden">
+                        @csrf
+                        <button type="submit" class="rounded-lg border border-rose-100 px-3 py-2 text-xs font-semibold text-rose-600">Keluar</button>
+                    </form>
+                    @yield('header-actions')
+                </div>
+            </header>
+
+            <div class="mx-auto w-full max-w-7xl p-4 sm:p-6 lg:p-8">
+                @if(session('success'))
+                    <div class="mb-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800" role="status">
+                        {{ session('success') }}
+                    </div>
+                @endif
+                @if(session('error'))
+                    <div class="mb-5 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800" role="alert">
+                        {{ session('error') }}
+                    </div>
+                @endif
+                @if($errors->any())
+                    <div class="mb-5 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800" role="alert">
+                        <p class="font-semibold">Periksa kembali data yang dimasukkan.</p>
+                        <ul class="mt-1 list-inside list-disc">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+                @yield('content')
+            </div>
+        </main>
+    </div>
+</body>
+</html>

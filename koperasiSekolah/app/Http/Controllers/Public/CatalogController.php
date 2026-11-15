@@ -11,6 +11,10 @@ class CatalogController extends Controller
 {
     public function home()
     {
+        if (auth()->user()?->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+
         // 1. Ambil 6 produk terbaru beserta kategorinya
         $featuredProducts = Product::with('category')->latest()->take(6)->get();
 
@@ -23,6 +27,10 @@ class CatalogController extends Controller
 
     public function index(Request $request)
     {
+        if ($request->user()?->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+
         $query = Product::with('category');
 
         // Filter pencarian jika ada parameter 'search'

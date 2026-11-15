@@ -1,106 +1,80 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Data Produk - Admin Koperasi</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>body { font-family: 'Inter', sans-serif; }</style>
-</head>
-<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-900">
+@extends('layouts.admin')
 
-    <!-- Sidebar Admin -->
-    <aside class="w-64 bg-white border-r border-gray-200 flex flex-col shrink-0">
-        <div class="h-16 flex items-center px-6 border-b border-gray-200">
-            <span class="text-lg font-bold text-blue-800">Admin Panel</span>
+@section('title', 'Produk')
+@section('page-title', 'Data Produk')
+@section('header-actions')
+    <a href="{{ route('admin.inventory.create') }}" class="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700">+ Tambah Produk</a>
+@endsection
+
+@section('content')
+    <div class="mb-5 flex flex-wrap items-end justify-between gap-4">
+        <div>
+            <h2 class="text-xl font-bold tracking-tight text-slate-900">Inventaris Produk</h2>
+            <p class="mt-1 text-sm text-slate-500">Kelola produk, harga, dan persediaan koperasi.</p>
         </div>
-        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-            <a href="{{ route('admin.inventory.index') }}" class="flex items-center gap-3 px-3 py-2.5 bg-blue-50 text-blue-700 rounded-lg font-medium shadow-sm">
-                📦 Data Produk
-            </a>
-            <a href="{{ route('admin.categories.index') }}" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-100 rounded-lg font-medium">
-                🏷️ Kelola Kategori
-            </a>
-            <a href="{{ route('admin.reports') }}" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-100 rounded-lg font-medium">
-                📋 Data Transaksi
-            </a>
-        </nav>
-        <div class="p-4 border-t border-gray-200">
-            <form method="POST" action="{{ route('logout') }}" class="m-0">
-                @csrf
-                <button type="submit" class="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg font-medium transition">
-                    🚪 Logout
-                </button>
-            </form>
-        </div>
-    </aside>
+        <form action="{{ route('admin.inventory.index') }}" method="GET" class="flex w-full gap-2 sm:w-auto">
+            <label for="product-search" class="sr-only">Cari produk</label>
+            <input id="product-search" type="search" name="search" value="{{ request('search') }}" placeholder="Cari produk..."
+                class="min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100 sm:w-64">
+            <button type="submit" class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Cari</button>
+        </form>
+    </div>
 
-    <!-- Konten Utama Admin -->
-    <main class="flex-1 flex flex-col h-screen overflow-y-auto bg-gray-50">
-        <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 shrink-0">
-            <h1 class="text-xl font-semibold text-gray-800">Data Produk / Inventory</h1>
-            <a href="{{ route('admin.inventory.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-blue-700 transition shadow-sm">
-                + Tambah Barang Baru
-            </a>
-        </header>
-
-        <div class="p-8">
-            @if(session('success'))
-                <div class="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl text-sm">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                            <th class="py-4 px-6">Gambar</th>
-                            <th class="py-4 px-6">Nama Barang</th>
-                            <th class="py-4 px-6">Kategori</th>
-                            <th class="py-4 px-6">Harga</th>
-                            <th class="py-4 px-6">Stok</th>
-                            <th class="py-4 px-6 text-right">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-200 text-sm">
-                        @forelse($products as $product)
-                        <tr class="hover:bg-gray-50/50 transition">
-                            <td class="py-4 px-6">
-                                <img src="{{ $product->image ? (str_starts_with($product->image, 'http') ? $product->image : asset('storage/'.$product->image)) : 'https://images.unsplash.com/photo-1542816417-0983c9c9ad53?auto=format&fit=crop&w=100&q=80' }}" 
-                                     class="w-12 h-12 rounded-lg object-cover border">
+    <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div class="overflow-x-auto">
+            <table class="w-full min-w-[760px] text-left text-sm">
+                <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    <tr>
+                        <th class="px-5 py-3.5">Produk</th>
+                        <th class="px-5 py-3.5">Kategori</th>
+                        <th class="px-5 py-3.5">Harga</th>
+                        <th class="px-5 py-3.5">Stok</th>
+                        <th class="px-5 py-3.5 text-right">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    @forelse($products as $product)
+                        <tr class="transition hover:bg-slate-50/70">
+                            <td class="px-5 py-4">
+                                <div class="flex items-center gap-3">
+                                    <img src="{{ $product->image ? (str_starts_with($product->image, 'http') ? $product->image : asset('storage/'.$product->image)) : 'https://images.unsplash.com/photo-1542816417-0983c9c9ad53?auto=format&fit=crop&w=100&q=80' }}"
+                                        alt="" class="h-11 w-11 rounded-xl border border-slate-100 object-cover">
+                                    <span class="font-semibold text-slate-900">{{ $product->name }}</span>
+                                </div>
                             </td>
-                            <td class="py-4 px-6 font-medium text-gray-900">{{ $product->name }}</td>
-                            <td class="py-4 px-6 text-gray-600">{{ $product->category->name ?? '-' }}</td>
-                            <td class="py-4 px-6 text-gray-900 font-semibold">Rp {{ number_format($product->price, 0, ',', '.') }}</td>
-                            <td class="py-4 px-6">
-                                <span class="px-2.5 py-1 rounded-full text-xs font-bold {{ $product->stock > 5 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
-                                    {{ $product->stock }} unit
-                                </span>
+                            <td class="px-5 py-4 text-slate-600">{{ $product->category->name ?? '-' }}</td>
+                            <td class="px-5 py-4 font-semibold text-slate-900">Rp {{ number_format($product->price, 0, ',', '.') }}</td>
+                            <td class="px-5 py-4">
+                                <span @class([
+                                    'inline-flex rounded-full px-2.5 py-1 text-xs font-semibold',
+                                    'bg-rose-50 text-rose-700' => $product->stock <= 5,
+                                    'bg-emerald-50 text-emerald-700' => $product->stock > 5,
+                                ])>{{ $product->stock }} unit</span>
                             </td>
-                            <td class="py-4 px-6 text-right space-x-2">
-                                <a href="{{ route('admin.inventory.edit', $product->id) }}" class="text-blue-600 hover:underline font-medium">Edit</a>
-                                <form action="{{ route('admin.inventory.destroy', $product->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Yakin ingin menghapus produk ini?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:underline font-medium">Hapus</button>
-                                </form>
+                            <td class="px-5 py-4 text-right">
+                                <div class="inline-flex items-center gap-3">
+                                    <a href="{{ route('admin.inventory.edit', $product) }}" class="font-semibold text-blue-600 hover:underline">Edit</a>
+                                    <form action="{{ route('admin.inventory.destroy', $product) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus produk ini?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="font-semibold text-rose-600 hover:underline">Hapus</button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
-                        @empty
+                    @empty
                         <tr>
-                            <td colspan="6" class="py-12 text-center text-gray-500">Belum ada data barang. Silakan tambah barang baru.</td>
+                            <td colspan="5" class="px-5 py-14 text-center">
+                                <p class="font-semibold text-slate-700">{{ request('search') ? 'Produk tidak ditemukan.' : 'Belum ada produk.' }}</p>
+                                <p class="mt-1 text-sm text-slate-500">Tambah produk atau ubah kata kunci pencarian.</p>
+                            </td>
                         </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="mt-6">
-                {{ $products->links() }}
-            </div>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
-    </main>
-</body>
-</html>
+        @if($products->hasPages())
+            <div class="border-t border-slate-100 px-5 py-4">{{ $products->links() }}</div>
+        @endif
+    </section>
+@endsection

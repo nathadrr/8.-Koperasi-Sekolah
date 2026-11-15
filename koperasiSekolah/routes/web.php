@@ -59,7 +59,7 @@ Route::middleware(['auth'])->group(function () {
         ->group(function () {
             
             // Dashboard Admin
-            Route::get('/dashboard', [InventoryController::class, 'index'])->name('dashboard');
+            Route::get('/dashboard', [InventoryController::class, 'dashboard'])->name('dashboard');
 
             // CRUD Stok / Inventaris & Kategori Produk
             Route::resource('inventory', InventoryController::class);

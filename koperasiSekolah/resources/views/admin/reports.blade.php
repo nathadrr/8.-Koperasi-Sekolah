@@ -1,170 +1,140 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Data Transaksi - Admin Koperasi</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>body { font-family: 'Inter', sans-serif; }</style>
-</head>
-<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-900">
+@extends('layouts.admin')
 
-    <!-- Sidebar Admin Konsisten -->
-    <aside class="w-64 bg-white border-r border-gray-200 flex flex-col shrink-0">
-        <div class="h-16 flex items-center px-6 border-b border-gray-200">
-            <span class="text-lg font-bold text-blue-800">Admin Panel</span>
+@section('title', 'Transaksi')
+@section('page-title', 'Laporan Penjualan & Transaksi')
+
+@section('content')
+    <div class="mb-6">
+        <h2 class="text-xl font-bold tracking-tight text-slate-900">Ringkasan Penjualan</h2>
+        <p class="mt-1 text-sm text-slate-500">Pantau pembayaran dan kelola status pesanan.</p>
+    </div>
+
+    <div class="mb-7 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+            <p class="text-sm font-medium text-emerald-800">Pendapatan Selesai</p>
+            <p class="mt-3 text-2xl font-bold tracking-tight text-emerald-900">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</p>
         </div>
-        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-            <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-lg font-medium">Dashboard</a>
-            <a href="{{ route('admin.inventory.index') }}" class="flex items-center gap-3 px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-lg font-medium">Data Produk</a>
-            <a href="{{ route('admin.categories.index') }}" class="flex items-center gap-3 px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-lg font-medium">Kelola Kategori</a>
-            <a href="{{ route('admin.reports') }}" class="flex items-center gap-3 px-3 py-2 bg-blue-50 text-blue-700 rounded-lg font-medium">Data Transaksi</a>
-        </nav>
-        <div class="p-4 border-t border-gray-200">
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="w-full text-left px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg font-medium">Logout</button>
-            </form>
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <p class="text-sm font-medium text-slate-500">Total Transaksi</p>
+            <p class="mt-3 text-2xl font-bold tracking-tight text-slate-900">{{ number_format($totalTransactions, 0, ',', '.') }}</p>
         </div>
-    </aside>
+        <div class="rounded-2xl border border-amber-200 bg-amber-50 p-5">
+            <p class="text-sm font-medium text-amber-800">Menunggu Pembayaran</p>
+            <p class="mt-3 text-2xl font-bold tracking-tight text-amber-900">{{ number_format($pendingCount, 0, ',', '.') }}</p>
+        </div>
+        <div class="rounded-2xl border border-blue-200 bg-blue-50 p-5">
+            <p class="text-sm font-medium text-blue-800">Transaksi Selesai</p>
+            <p class="mt-3 text-2xl font-bold tracking-tight text-blue-900">{{ number_format($completedCount, 0, ',', '.') }}</p>
+        </div>
+    </div>
 
-    <!-- Konten Utama -->
-    <main class="flex-1 flex flex-col h-screen overflow-y-auto bg-gray-50">
-        <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 shrink-0">
-            <h1 class="text-xl font-semibold text-gray-800">Laporan Penjualan & Transaksi</h1>
-            <a href="{{ route('home') }}" class="text-sm text-blue-600 hover:underline">Lihat Katalog Web</a>
-        </header>
-
-        <div class="p-8">
-            
-            @if(session('success'))
-                <div class="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl text-sm">
-                    {{ session('success') }}
-                </div>
+    <section class="mb-5 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <form action="{{ route('admin.reports') }}" method="GET" class="flex flex-wrap items-end gap-3">
+            <div>
+                <label for="status-filter" class="mb-1.5 block text-xs font-semibold text-slate-600">Status</label>
+                <select id="status-filter" name="status" class="min-w-44 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
+                    <option value="">Semua Status</option>
+                    <option value="pending" @selected(request('status') === 'pending')>Menunggu</option>
+                    <option value="paid" @selected(request('status') === 'paid')>Lunas</option>
+                    <option value="completed" @selected(request('status') === 'completed')>Selesai</option>
+                    <option value="cancelled" @selected(request('status') === 'cancelled')>Dibatalkan</option>
+                </select>
+            </div>
+            <div>
+                <label for="date-filter" class="mb-1.5 block text-xs font-semibold text-slate-600">Tanggal</label>
+                <input id="date-filter" type="date" name="date" value="{{ request('date') }}" class="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
+            </div>
+            <button type="submit" class="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700">Terapkan Filter</button>
+            @if(request('status') || request('date'))
+                <a href="{{ route('admin.reports') }}" class="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50">Reset</a>
             @endif
+        </form>
+    </section>
 
-            <!-- Ringkasan Laporan Penjualan -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Pendapatan (Selesai)</p>
-                    <p class="text-2xl font-bold text-green-600 mt-2">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</p>
-                </div>
-                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Transaksi</p>
-                    <p class="text-2xl font-bold text-gray-900 mt-2">{{ $totalTransactions }} Pesanan</p>
-                </div>
-                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Perlu Diproses (Pending)</p>
-                    <p class="text-2xl font-bold text-amber-500 mt-2">{{ $pendingCount }} Pesanan</p>
-                </div>
-                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Transaksi Selesai</p>
-                    <p class="text-2xl font-bold text-blue-600 mt-2">{{ $completedCount }} Pesanan</p>
-                </div>
+    <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+            <div>
+                <h3 class="font-semibold text-slate-900">Daftar Transaksi</h3>
+                <p class="mt-1 text-xs text-slate-500">{{ $transactions->total() }} transaksi ditemukan</p>
             </div>
-
-            <!-- Filter Transaksi -->
-            <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm mb-6">
-                <form action="{{ route('admin.reports') }}" method="GET" class="flex flex-wrap items-center gap-4">
-                    <div>
-                        <label class="block text-xs font-medium text-gray-500 mb-1">Status Transaksi</label>
-                        <select name="status" onchange="this.form.submit()" class="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white outline-none">
-                            <option value="">Semua Status</option>
-                            <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
-                            <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>Lunas / Dibayar</option>
-                            <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>Selesai</option>
-                            <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Dibatalkan</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-medium text-gray-500 mb-1">Filter Tanggal</label>
-                        <input type="date" name="date" value="{{ request('date') }}" onchange="this.form.submit()" class="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white outline-none">
-                    </div>
-
-                    @if(request('status') || request('date'))
-                        <div class="self-end">
-                            <a href="{{ route('admin.reports') }}" class="text-xs text-red-600 hover:underline font-medium">Reset Filter</a>
-                        </div>
-                    @endif
-                </form>
-            </div>
-
-            <!-- Tabel Data Transaksi -->
-            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                            <th class="py-4 px-6">Kode & Tanggal</th>
-                            <th class="py-4 px-6">Pembeli</th>
-                            <th class="py-4 px-6">Produk</th>
-                            <th class="py-4 px-6">Total Harga</th>
-                            <th class="py-4 px-6">Status</th>
-                            <th class="py-4 px-6 text-right">Ubah Status</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-200 text-sm">
-                        @forelse($transactions as $trx)
-                        <tr class="hover:bg-gray-50/50 transition">
-                            <td class="py-4 px-6">
-                                <span class="font-bold text-gray-900 block">{{ $trx->transaction_code }}</span>
-                                <span class="text-xs text-gray-400">{{ $trx->created_at->format('d M Y, H:i') }} WIB</span>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full min-w-[1050px] text-left text-sm">
+                <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    <tr>
+                        <th class="px-5 py-3.5">Pesanan</th>
+                        <th class="px-5 py-3.5">Pembeli</th>
+                        <th class="px-5 py-3.5">Produk</th>
+                        <th class="px-5 py-3.5">Total</th>
+                        <th class="px-5 py-3.5">Status</th>
+                        <th class="px-5 py-3.5 text-right">Ubah Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    @forelse($transactions as $trx)
+                        <tr class="align-top transition hover:bg-slate-50/70">
+                            <td class="px-5 py-4">
+                                <span class="block font-semibold text-slate-900">{{ $trx->transaction_code }}</span>
+                                <span class="mt-1 block text-xs text-slate-500">{{ $trx->created_at->format('d M Y, H:i') }} WIB</span>
                             </td>
-                            <td class="py-4 px-6">
-                                <span class="font-medium text-gray-900 block">{{ $trx->buyer_name ?? $trx->user->name ?? 'Guest' }}</span>
-                                <span class="text-xs text-gray-500">{{ $trx->buyer_class ?? 'Siswa' }}</span>
+                            <td class="px-5 py-4">
+                                <span class="block font-medium text-slate-800">{{ $trx->buyer_name ?? $trx->user?->name ?? 'Pembeli' }}</span>
+                                <span class="mt-1 block text-xs text-slate-500">{{ $trx->buyer_class ?? 'Umum' }}</span>
                             </td>
-                            <td class="py-4 px-6">
+                            <td class="max-w-xs px-5 py-4">
                                 @forelse($trx->details as $detail)
-                                    <span class="font-medium text-gray-900 block">{{ $detail->product->name ?? 'Produk Dihapus' }}</span>
-                                    <span class="text-xs text-gray-500 block">{{ $detail->quantity }} unit x Rp {{ number_format($detail->unit_price, 0, ',', '.') }}</span>
+                                    <span class="block font-medium text-slate-800">{{ $detail->product->name ?? 'Produk Dihapus' }}</span>
+                                    <span class="mb-2 block text-xs text-slate-500">{{ $detail->quantity }} unit x Rp {{ number_format($detail->unit_price, 0, ',', '.') }}</span>
                                 @empty
-                                    <span class="font-medium text-gray-900 block">{{ $trx->product->name ?? 'Produk Dihapus' }}</span>
-                                    <span class="text-xs text-gray-500">{{ $trx->quantity }} unit x Rp {{ number_format($trx->product->price ?? 0, 0, ',', '.') }}</span>
+                                    <span class="block font-medium text-slate-800">{{ $trx->product->name ?? 'Produk Dihapus' }}</span>
+                                    <span class="block text-xs text-slate-500">{{ $trx->quantity }} unit x Rp {{ number_format($trx->product->price ?? 0, 0, ',', '.') }}</span>
                                 @endforelse
                             </td>
-                            <td class="py-4 px-6 font-bold text-gray-900">
-                                Rp {{ number_format($trx->total_price, 0, ',', '.') }}
+                            <td class="whitespace-nowrap px-5 py-4 font-semibold text-slate-900">Rp {{ number_format($trx->total_price, 0, ',', '.') }}</td>
+                            <td class="px-5 py-4">
+                                @php
+                                    $statusStyles = [
+                                        'pending' => 'bg-amber-100 text-amber-800',
+                                        'paid' => 'bg-blue-100 text-blue-800',
+                                        'completed' => 'bg-emerald-100 text-emerald-800',
+                                        'cancelled' => 'bg-rose-100 text-rose-800',
+                                    ];
+                                    $statusLabels = [
+                                        'pending' => 'Menunggu',
+                                        'paid' => 'Lunas',
+                                        'completed' => 'Selesai',
+                                        'cancelled' => 'Dibatalkan',
+                                    ];
+                                @endphp
+                                <span @class(['inline-flex rounded-full px-2.5 py-1 text-xs font-semibold', $statusStyles[$trx->status] ?? 'bg-slate-100 text-slate-700'])>
+                                    {{ $statusLabels[$trx->status] ?? $trx->status }}
+                                </span>
+                                <span class="mt-1 block text-xs text-slate-500">{{ $trx->payment_method === 'midtrans' ? 'Midtrans' : 'Tunai' }}</span>
                             </td>
-                            <td class="py-4 px-6">
-                                @if($trx->status === 'pending')
-                                    <span class="px-2.5 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-bold">Pending</span>
-                                @elseif($trx->status === 'paid')
-                                    <span class="px-2.5 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">Lunas</span>
-                                @elseif($trx->status === 'completed')
-                                    <span class="px-2.5 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">Selesai</span>
-                                @else
-                                    <span class="px-2.5 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold">Batal</span>
-                                @endif
-                            </td>
-                            <td class="py-4 px-6 text-right">
-                                <form action="{{ route('admin.transactions.updateStatus', $trx->id) }}" method="POST" class="inline-flex items-center gap-1">
+                            <td class="px-5 py-4 text-right">
+                                <form action="{{ route('admin.transactions.updateStatus', $trx) }}" method="POST" class="inline-flex">
                                     @csrf
                                     @method('PATCH')
-                                    <select name="status" onchange="this.form.submit()" class="text-xs border border-gray-300 rounded-lg px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500">
-                                        <option value="pending" {{ $trx->status === 'pending' ? 'selected' : '' }}>Pending</option>
-                                        <option value="paid" {{ $trx->status === 'paid' ? 'selected' : '' }}>Lunas</option>
-                                        <option value="completed" {{ $trx->status === 'completed' ? 'selected' : '' }}>Selesai</option>
-                                        <option value="cancelled" {{ $trx->status === 'cancelled' ? 'selected' : '' }}>Batal</option>
+                                    <label for="status-{{ $trx->id }}" class="sr-only">Ubah status transaksi {{ $trx->transaction_code }}</label>
+                                    <select id="status-{{ $trx->id }}" name="status" onchange="this.form.submit()" class="rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-xs font-medium text-slate-700 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
+                                        <option value="pending" @selected($trx->status === 'pending')>Menunggu</option>
+                                        <option value="paid" @selected($trx->status === 'paid')>Lunas</option>
+                                        <option value="completed" @selected($trx->status === 'completed')>Selesai</option>
+                                        <option value="cancelled" @selected($trx->status === 'cancelled')>Dibatalkan</option>
                                     </select>
                                 </form>
                             </td>
                         </tr>
-                        @empty
+                    @empty
                         <tr>
-                            <td colspan="6" class="py-12 text-center text-gray-500">Belum ada transaksi recorded.</td>
+                            <td colspan="6" class="px-5 py-14 text-center text-slate-500">Belum ada transaksi untuk filter ini.</td>
                         </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-
-                <div class="p-4 border-t border-gray-100">
-                    {{ $transactions->links() }}
-                </div>
-            </div>
-
+                    @endforelse
+                </tbody>
+            </table>
         </div>
-    </main>
-</body>
-</html>
+        @if($transactions->hasPages())
+            <div class="border-t border-slate-100 px-5 py-4">{{ $transactions->links() }}</div>
+        @endif
+    </section>
+@endsection

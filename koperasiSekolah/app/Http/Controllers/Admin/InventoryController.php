@@ -5,11 +5,29 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class InventoryController extends Controller
 {
+    public function dashboard()
+    {
+        $stats = [
+            'products' => Product::count(),
+            'categories' => Category::count(),
+            'pending' => Transaction::where('status', 'pending')->count(),
+            'revenue' => Transaction::whereIn('status', ['paid', 'completed'])->sum('total_price'),
+            'lowStock' => Product::where('stock', '<=', 5)->count(),
+        ];
+        $recentTransactions = Transaction::with(['user', 'product'])
+            ->latest()
+            ->take(5)
+            ->get();
+
+        return view('admin.dashboard', compact('stats', 'recentTransactions'));
+    }
+
     // Menampilkan daftar produk (Dashboard Admin) + Fitur Search
     public function index(Request $request)
     {

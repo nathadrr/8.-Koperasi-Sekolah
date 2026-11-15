@@ -14,13 +14,15 @@
 </head>
 <body class="hero-gradient min-h-screen">
     <nav class="glass-nav sticky top-0 z-50 px-8 py-4 flex justify-between items-center">
-        <a href="/" class="text-2xl font-bold text-gray-900 tracking-tighter">St. Agnes <span class="text-blue-600">Coop.</span></a>
+        <a href="{{ Auth::check() && Auth::user()->role === 'admin' ? route('admin.dashboard') : route('home') }}" class="text-2xl font-bold text-gray-900 tracking-tighter">St. Agnes <span class="text-blue-600">Coop.</span></a>
         
-        <div class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600">
-            <a href="/" class="hover:text-blue-600 transition">Home</a>
-            <a href="#" class="hover:text-blue-600 transition">About</a>
-            <a href="#" class="hover:text-blue-600 transition">Contact</a>
-        </div>
+        @if(!Auth::check() || Auth::user()->role !== 'admin')
+            <div class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600">
+                <a href="/" class="hover:text-blue-600 transition">Home</a>
+                <a href="#" class="hover:text-blue-600 transition">About</a>
+                <a href="#" class="hover:text-blue-600 transition">Contact</a>
+            </div>
+        @endif
 
         <div class="flex items-center gap-4">
             @auth

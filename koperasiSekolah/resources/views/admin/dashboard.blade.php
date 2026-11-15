@@ -1,83 +1,95 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Admin Panel - Koperasi St. Agnes</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>body { font-family: 'Inter', sans-serif; }</style>
-</head>
-<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-900">
+@extends('layouts.admin')
 
-    <!-- Sidebar Admin -->
-    <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
-        <div class="h-16 flex items-center px-6 border-b border-gray-200">
-            <span class="text-lg font-bold text-blue-800">Admin Panel</span>
+@section('title', 'Dashboard')
+@section('page-title', 'Dashboard')
+
+@section('content')
+    <div class="mb-6">
+        <p class="text-sm text-slate-500">Ringkasan kondisi katalog dan transaksi koperasi.</p>
+    </div>
+
+    <div class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <p class="text-sm font-medium text-slate-500">Total Produk</p>
+            <p class="mt-3 text-3xl font-bold tracking-tight text-slate-900">{{ number_format($stats['products'], 0, ',', '.') }}</p>
+            <a href="{{ route('admin.inventory.index') }}" class="mt-3 inline-block text-xs font-semibold text-blue-600 hover:underline">Kelola produk &rarr;</a>
         </div>
-        
-        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-            <!-- Link Kelola Produk -->
-            <a href="{{ route('admin.inventory.index') }}" class="flex items-center gap-3 px-3 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-lg font-medium transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
-                Data Produk
-            </a>
-
-            <!-- Link Transaksi -->
-            <a href="{{ route('admin.reports') }}" class="flex items-center gap-3 px-3 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-lg font-medium transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                Data Transaksi
-            </a>
-        </nav>
-
-        <!-- Logout Area -->
-        <div class="p-4 border-t border-gray-200">
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="w-full flex items-center gap-3 px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg font-medium transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                    Logout Admin
-                </button>
-            </form>
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <p class="text-sm font-medium text-slate-500">Kategori</p>
+            <p class="mt-3 text-3xl font-bold tracking-tight text-slate-900">{{ number_format($stats['categories'], 0, ',', '.') }}</p>
+            <a href="{{ route('admin.categories.index') }}" class="mt-3 inline-block text-xs font-semibold text-blue-600 hover:underline">Kelola kategori &rarr;</a>
         </div>
-    </aside>
-
-    <!-- Area Konten Utama -->
-    <main class="flex-1 flex flex-col h-screen overflow-y-auto bg-gray-50">
-        
-        <!-- Header -->
-        <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8">
-            <h1 class="text-xl font-semibold text-gray-800">Overview</h1>
-            <div class="flex items-center gap-4">
-                <span class="text-sm font-medium text-gray-600">Halo, {{ Auth::user()->name }}</span>
-                <a href="{{ route('home') }}" class="text-sm text-blue-600 hover:underline">Lihat Katalog Web</a>
-            </div>
-        </header>
-
-        <!-- Isi Konten -->
-        <div class="p-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <!-- Card Statistik Cepat -->
-                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-                    <h3 class="text-gray-500 text-sm font-medium">Total Produk</h3>
-                    <p class="text-3xl font-bold text-gray-900 mt-2">124</p> <!-- Nanti ganti dengan count dari database -->
-                </div>
-                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-                    <h3 class="text-gray-500 text-sm font-medium">Pesanan Masuk</h3>
-                    <p class="text-3xl font-bold text-gray-900 mt-2">12</p>
-                </div>
-                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-                    <h3 class="text-gray-500 text-sm font-medium">Pendapatan</h3>
-                    <p class="text-3xl font-bold text-gray-900 mt-2">Rp 2.450.000</p>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-                <h2 class="text-lg font-semibold text-gray-800 mb-4">Selamat datang di Panel Admin</h2>
-                <p class="text-gray-600">Gunakan navigasi di sebelah kiri untuk menambah/mengedit barang di katalog dan memproses transaksi yang masuk dari siswa.</p>
-            </div>
+        <div class="rounded-2xl border border-amber-200 bg-amber-50 p-5 shadow-sm">
+            <p class="text-sm font-medium text-amber-800">Menunggu Pembayaran</p>
+            <p class="mt-3 text-3xl font-bold tracking-tight text-amber-900">{{ number_format($stats['pending'], 0, ',', '.') }}</p>
+            <a href="{{ route('admin.reports', ['status' => 'pending']) }}" class="mt-3 inline-block text-xs font-semibold text-amber-800 hover:underline">Lihat transaksi &rarr;</a>
         </div>
-    </main>
+        <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm">
+            <p class="text-sm font-medium text-emerald-800">Pendapatan Dibayar</p>
+            <p class="mt-3 text-2xl font-bold tracking-tight text-emerald-900">Rp {{ number_format($stats['revenue'], 0, ',', '.') }}</p>
+            <p class="mt-3 text-xs text-emerald-800">Dari transaksi lunas dan selesai</p>
+        </div>
+    </div>
 
-</body>
-</html>
+    <div class="mb-8 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div>
+            <h2 class="font-semibold text-slate-900">Perhatian stok</h2>
+            <p class="mt-1 text-sm text-slate-500">{{ $stats['lowStock'] }} produk memiliki stok 5 unit atau kurang.</p>
+        </div>
+        <a href="{{ route('admin.inventory.index') }}" class="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Periksa inventaris</a>
+    </div>
+
+    <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
+            <div>
+                <h2 class="font-semibold text-slate-900">Transaksi Terbaru</h2>
+                <p class="mt-1 text-xs text-slate-500">Lima pesanan yang terakhir dibuat</p>
+            </div>
+            <a href="{{ route('admin.reports') }}" class="text-sm font-semibold text-blue-600 hover:underline">Semua transaksi &rarr;</a>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full min-w-[640px] text-left text-sm">
+                <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    <tr>
+                        <th class="px-5 py-3">Kode Pesanan</th>
+                        <th class="px-5 py-3">Pembeli</th>
+                        <th class="px-5 py-3">Total</th>
+                        <th class="px-5 py-3">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    @forelse($recentTransactions as $transaction)
+                        <tr>
+                            <td class="px-5 py-4 font-medium text-slate-900">{{ $transaction->transaction_code }}</td>
+                            <td class="px-5 py-4 text-slate-600">{{ $transaction->buyer_name ?? $transaction->user?->name ?? 'Pembeli' }}</td>
+                            <td class="px-5 py-4 font-medium text-slate-900">Rp {{ number_format($transaction->total_price, 0, ',', '.') }}</td>
+                            <td class="px-5 py-4">
+                                @php
+                                    $statusStyles = [
+                                        'pending' => 'bg-amber-100 text-amber-800',
+                                        'paid' => 'bg-blue-100 text-blue-800',
+                                        'completed' => 'bg-emerald-100 text-emerald-800',
+                                        'cancelled' => 'bg-rose-100 text-rose-800',
+                                    ];
+                                    $statusLabels = [
+                                        'pending' => 'Menunggu',
+                                        'paid' => 'Lunas',
+                                        'completed' => 'Selesai',
+                                        'cancelled' => 'Dibatalkan',
+                                    ];
+                                @endphp
+                                <span @class(['inline-flex rounded-full px-2.5 py-1 text-xs font-semibold', $statusStyles[$transaction->status] ?? 'bg-slate-100 text-slate-700'])>
+                                    {{ $statusLabels[$transaction->status] ?? $transaction->status }}
+                                </span>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" class="px-5 py-12 text-center text-slate-500">Belum ada transaksi.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </section>
+@endsection
