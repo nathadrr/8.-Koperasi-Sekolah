@@ -99,4 +99,69 @@ class AdminDashboardTest extends TestCase
             ->assertOk()
             ->assertSee('Jelajahi Katalog Barang');
     }
+
+    public function test_report_summaries_match_transaction_statuses_and_active_filters(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $category = Category::create(['name' => 'Alat Tulis']);
+        $product = Product::create([
+            'category_id' => $category->id,
+            'name' => 'Buku Tulis',
+            'price' => 1000,
+            'stock' => 20,
+        ]);
+
+        foreach ([
+            ['TRX-REPORT-PENDING', 'pending', 1000],
+            ['TRX-REPORT-PAID', 'paid', 2000],
+            ['TRX-REPORT-COMPLETED', 'completed', 3000],
+            ['TRX-REPORT-CANCELLED', 'cancelled', 4000],
+        ] as [$code, $status, $totalPrice]) {
+            Transaction::create([
+                'transaction_code' => $code,
+                'user_id' => $admin->id,
+                'product_id' => $product->id,
+                'quantity' => 1,
+                'total_price' => $totalPrice,
+                'status' => $status,
+                'payment_method' => 'cash',
+                'buyer_name' => $admin->name,
+            ]);
+        }
+
+        $this->actingAs($admin)
+            ->get(route('admin.reports'))
+            ->assertOk()
+            ->assertSee('<p class="mt-3 text-2xl font-bold tracking-tight text-emerald-900">Rp 5.000</p>', false)
+            ->assertSee('<p class="mt-3 text-2xl font-bold tracking-tight text-slate-900">4</p>', false)
+            ->assertSee('<p class="mt-3 text-2xl font-bold tracking-tight text-amber-900">1</p>', false)
+            ->assertSee('<p class="mt-3 text-2xl font-bold tracking-tight text-blue-900">2</p>', false);
+
+        $this->actingAs($admin)
+            ->get(route('admin.reports', ['status' => 'pending']))
+            ->assertOk()
+            ->assertSee('<p class="mt-3 text-2xl font-bold tracking-tight text-emerald-900">Rp 0</p>', false)
+            ->assertSee('<p class="mt-3 text-2xl font-bold tracking-tight text-slate-900">1</p>', false)
+            ->assertSee('<p class="mt-3 text-2xl font-bold tracking-tight text-amber-900">1</p>', false)
+            ->assertSee('<p class="mt-3 text-2xl font-bold tracking-tight text-blue-900">0</p>', false)
+            ->assertDontSee('TRX-REPORT-PAID')
+            ->assertDontSee('TRX-REPORT-COMPLETED');
+
+        $this->actingAs($admin)
+            ->get(route('admin.reports', ['status' => 'completed']))
+            ->assertOk()
+            ->assertSee('<p class="mt-3 text-2xl font-bold tracking-tight text-emerald-900">Rp 3.000</p>', false)
+            ->assertSee('<p class="mt-3 text-2xl font-bold tracking-tight text-slate-900">1</p>', false)
+            ->assertSee('<p class="mt-3 text-2xl font-bold tracking-tight text-amber-900">0</p>', false)
+            ->assertSee('<p class="mt-3 text-2xl font-bold tracking-tight text-blue-900">1</p>', false)
+            ->assertSee('TRX-REPORT-COMPLETED')
+            ->assertDontSee('TRX-REPORT-PAID');
+
+        $this->actingAs($admin)
+            ->get(route('admin.reports', ['status' => 'paid']))
+            ->assertOk()
+            ->assertSee('Rp 2.000')
+            ->assertSee('<p class="mt-3 text-2xl font-bold tracking-tight text-blue-900">1</p>', false)
+            ->assertSee('TRX-REPORT-PAID');
+    }
 }

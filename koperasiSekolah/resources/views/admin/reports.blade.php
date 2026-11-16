@@ -6,12 +6,12 @@
 @section('content')
     <div class="mb-6">
         <h2 class="text-xl font-bold tracking-tight text-slate-900">Ringkasan Penjualan</h2>
-        <p class="mt-1 text-sm text-slate-500">Pantau pembayaran dan kelola status pesanan.</p>
+        <p class="mt-1 text-sm text-slate-500">Ringkasan dan daftar mengikuti filter yang dipilih. Pendapatan mencakup transaksi lunas dan selesai.</p>
     </div>
 
     <div class="mb-7 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
-            <p class="text-sm font-medium text-emerald-800">Pendapatan Selesai</p>
+            <p class="text-sm font-medium text-emerald-800">Pendapatan Dibayar</p>
             <p class="mt-3 text-2xl font-bold tracking-tight text-emerald-900">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</p>
         </div>
         <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -23,7 +23,7 @@
             <p class="mt-3 text-2xl font-bold tracking-tight text-amber-900">{{ number_format($pendingCount, 0, ',', '.') }}</p>
         </div>
         <div class="rounded-2xl border border-blue-200 bg-blue-50 p-5">
-            <p class="text-sm font-medium text-blue-800">Transaksi Selesai</p>
+            <p class="text-sm font-medium text-blue-800">Transaksi Berhasil</p>
             <p class="mt-3 text-2xl font-bold tracking-tight text-blue-900">{{ number_format($completedCount, 0, ',', '.') }}</p>
         </div>
     </div>

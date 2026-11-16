@@ -51,7 +51,8 @@ class CatalogController extends Controller
         }
 
         $products = $query->latest()->paginate(12)->withQueryString();
+        $categories = Category::orderBy('name')->get();
 
-        return view('public.explore', compact('products'));
+        return view('public.explore', compact('products', 'categories'));
     }
 }

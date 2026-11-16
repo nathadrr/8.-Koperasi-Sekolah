@@ -63,13 +63,16 @@ class TransactionController extends Controller
             $query->whereDate('created_at', $request->date);
         }
 
+        $summaryQuery = clone $query;
+        $totalRevenue = (clone $summaryQuery)
+            ->whereIn('status', ['paid', 'completed'])
+            ->sum('total_price');
+        $totalTransactions = (clone $summaryQuery)->count();
+        $pendingCount = (clone $summaryQuery)->where('status', 'pending')->count();
+        $completedCount = (clone $summaryQuery)
+            ->whereIn('status', ['paid', 'completed'])
+            ->count();
         $transactions = $query->paginate(15);
-
-        // Ringkasan Laporan Penjualan (Dashboard Metrics)
-        $totalRevenue = Transaction::where('status', 'completed')->sum('total_price');
-        $totalTransactions = Transaction::count();
-        $pendingCount = Transaction::where('status', 'pending')->count();
-        $completedCount = Transaction::where('status', 'completed')->count();
 
         return view('admin.reports', compact('transactions', 'totalRevenue', 'totalTransactions', 'pendingCount', 'completedCount'));
     }
