@@ -13,6 +13,31 @@ class InventoryController extends Controller
 {
     public function dashboard()
     {
+        $periodStart = now()->startOfMonth()->subMonths(5);
+        $monthlyTransactions = Transaction::query()
+            ->where('created_at', '>=', $periodStart)
+            ->get(['created_at', 'total_price', 'status'])
+            ->groupBy(fn (Transaction $transaction): string => $transaction->created_at->format('Y-m'));
+
+        $monthlySales = collect(range(0, 5))
+            ->map(function (int $offset) use ($periodStart, $monthlyTransactions): array {
+                $month = $periodStart->copy()->addMonths($offset);
+                $transactions = $monthlyTransactions->get($month->format('Y-m'), collect());
+                $paidTransactions = $transactions->whereIn('status', ['paid', 'completed']);
+
+                return [
+                    'label' => $month->translatedFormat('M Y'),
+                    'revenue' => (float) $paidTransactions->sum('total_price'),
+                    'paid' => $paidTransactions->count(),
+                    'pending' => $transactions->where('status', 'pending')->count(),
+                    'cancelled' => $transactions->where('status', 'cancelled')->count(),
+                    'total' => $transactions->count(),
+                ];
+            });
+
+        $maxMonthlyRevenue = max(1, (float) $monthlySales->max('revenue'));
+        $maxMonthlyTransactions = max(1, (int) $monthlySales->max('total'));
+
         $stats = [
             'products' => Product::count(),
             'categories' => Category::count(),
@@ -25,7 +50,13 @@ class InventoryController extends Controller
             ->take(5)
             ->get();
 
-        return view('admin.dashboard', compact('stats', 'recentTransactions'));
+        return view('admin.dashboard', compact(
+            'stats',
+            'recentTransactions',
+            'monthlySales',
+            'maxMonthlyRevenue',
+            'maxMonthlyTransactions'
+        ));
     }
 
     // Menampilkan daftar produk (Dashboard Admin) + Fitur Search

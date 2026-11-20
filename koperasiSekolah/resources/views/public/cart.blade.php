@@ -3,7 +3,7 @@
         
         <div class="flex items-center justify-between mb-8">
             <h1 class="text-2xl font-bold text-gray-900">Keranjang Belanja</h1>
-            <a href="{{ route('explore') }}" class="text-sm font-semibold text-blue-600 hover:underline">&larr; Lanjut Belanja</a>
+            <a href="{{ route('explore') }}" class="text-sm font-semibold text-blue-600 hover:underline">Lanjut Belanja</a>
         </div>
 
         @if(session('success'))
@@ -34,12 +34,18 @@
                     </div>
 
                     <div class="flex items-center gap-3">
-                        <form action="{{ route('cart.update', $id) }}" method="POST" class="flex items-center gap-1">
+                        <form action="{{ route('cart.update', $id) }}" method="POST" class="flex items-center gap-1.5" data-quantity-form>
                             @csrf
                             @method('PATCH')
-                            <input type="number" name="quantity" value="{{ $item['quantity'] }}" min="1" max="{{ $item['max_stock'] }}" 
-                                   class="w-14 px-2 py-1 border border-gray-200 rounded-lg text-center text-sm font-semibold outline-none focus:ring-1 focus:ring-blue-500">
-                            <button type="submit" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 rounded-lg">Ubah</button>
+                            <button type="button" data-quantity-step="-1" aria-label="Kurangi jumlah {{ $item['name'] }}"
+                                    class="h-9 w-9 rounded-lg border border-gray-200 bg-white text-lg font-semibold text-gray-700 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
+                                    @disabled($item['quantity'] <= 1)>-</button>
+                            <input type="number" name="quantity" value="{{ $item['quantity'] }}" min="1" max="{{ $item['max_stock'] }}" readonly
+                                   aria-label="Jumlah {{ $item['name'] }}"
+                                   class="w-12 border-0 bg-transparent p-0 text-center text-sm font-semibold text-gray-900 focus:outline-none">
+                            <button type="button" data-quantity-step="1" aria-label="Tambah jumlah {{ $item['name'] }}"
+                                    class="h-9 w-9 rounded-lg border border-gray-200 bg-white text-lg font-semibold text-gray-700 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
+                                    @disabled($item['quantity'] >= $item['max_stock'])>+</button>
                         </form>
 
                         <form action="{{ route('cart.remove', $id) }}" method="POST">
@@ -155,4 +161,25 @@
         @endif
 
     </div>
+    <script>
+        document.querySelectorAll('[data-quantity-form]').forEach((form) => {
+            const quantity = form.querySelector('[name="quantity"]');
+
+            form.querySelectorAll('[data-quantity-step]').forEach((button) => {
+                button.addEventListener('click', () => {
+                    const current = Number(quantity.value);
+                    const min = Number(quantity.min);
+                    const max = Number(quantity.max);
+                    const next = Math.min(max, Math.max(min, current + Number(button.dataset.quantityStep)));
+
+                    if (next === current) {
+                        return;
+                    }
+
+                    quantity.value = next;
+                    form.requestSubmit();
+                });
+            });
+        });
+    </script>
 </x-guest-layout>

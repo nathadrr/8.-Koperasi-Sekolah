@@ -27,7 +27,10 @@
             <div class="flex justify-between h-16 items-center">
                 
                 <a href="{{ Auth::check() && Auth::user()->role === 'admin' ? route('admin.dashboard') : route('home') }}" class="text-xl font-bold tracking-tight text-blue-900 shrink-0">
-                    St. Agnes Coop.
+                    <span class="flex items-center gap-2">
+                        <img src="{{ asset('images/Logo_Sekolah.png') }}" alt="Logo SMPK Santa Agnes" class="h-10 w-10 object-contain">
+                        <span>St. Agnes Coop.</span>
+                    </span>
                 </a>
                 
                 @if(!Auth::check() || Auth::user()->role !== 'admin')
@@ -56,7 +59,7 @@
                                 Riwayat Belanja
                             </a>
                         @endif
-                        <span class="text-sm font-semibold text-blue-700 bg-blue-50 px-4 py-2 rounded-full border border-blue-100">👤 {{ Auth::user()->name }}</span>
+                        <span class="text-sm font-semibold text-blue-700 bg-blue-50 px-4 py-2 rounded-full border border-blue-100">{{ Auth::user()->name }}</span>
                         <form method="POST" action="{{ route('logout') }}" class="m-0">
                             @csrf
                             <button type="submit" class="text-sm font-medium text-red-500 hover:text-red-700 transition">Logout</button>
@@ -95,7 +98,7 @@
                             </a>
                         @else
                             <a href="{{ route('cart.index') }}" class="block px-3 py-2.5 text-base font-medium text-gray-900 hover:bg-gray-50 rounded-lg flex items-center justify-between">
-                                <span>🛒 Keranjang Belanja</span>
+                                <span>Keranjang Belanja</span>
                                 @if(count(session('cart', [])) > 0)
                                     <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
                                         {{ count(session('cart', [])) }}
@@ -103,11 +106,11 @@
                                 @endif
                             </a>
                             <a href="{{ route('history.index') }}" class="block px-3 py-2.5 text-base font-medium text-gray-900 hover:bg-gray-50 rounded-lg">
-                                📜 Riwayat Belanja
+                                Riwayat Belanja
                             </a>
                         @endif
                         <div class="block px-3 py-2 text-base font-semibold text-blue-700 bg-blue-50 rounded-lg my-2">
-                            👤 {{ Auth::user()->name }}
+                            {{ Auth::user()->name }}
                         </div>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf

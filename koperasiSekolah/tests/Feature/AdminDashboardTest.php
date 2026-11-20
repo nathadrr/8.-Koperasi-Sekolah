@@ -40,6 +40,11 @@ class AdminDashboardTest extends TestCase
             ->assertSee('Total Produk')
             ->assertSee('Kategori')
             ->assertSee('Pendapatan Dibayar')
+            ->assertSee('Pendapatan per Bulan')
+            ->assertSee('Jumlah Transaksi per Status')
+            ->assertSee('Ekspor CSV')
+            ->assertSee('Ekspor XLSX')
+            ->assertSee('1 transaksi')
             ->assertSee('Rp 10.000')
             ->assertSee('TRX-DASH-001');
     }
@@ -88,6 +93,17 @@ class AdminDashboardTest extends TestCase
             ->assertOk()
             ->assertDontSee('Lihat katalog')
             ->assertDontSee('Katalog');
+    }
+
+    public function test_admin_is_told_when_midtrans_server_key_is_not_configured_for_sync(): void
+    {
+        config(['services.midtrans.server_key' => null]);
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $this->actingAs($admin)
+            ->post(route('admin.transactions.syncPending'))
+            ->assertRedirect(route('admin.dashboard'))
+            ->assertSessionHas('error', 'Server Key Midtrans belum dikonfigurasi. Status transaksi tidak dapat disinkronkan.');
     }
 
     public function test_regular_users_can_still_access_the_customer_catalog(): void

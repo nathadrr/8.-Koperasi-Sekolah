@@ -3,18 +3,12 @@
         
         <!-- Hero Section -->
         <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">
-            <span class="inline-block px-4 py-1.5 bg-blue-100 text-blue-700 font-semibold text-xs rounded-full uppercase tracking-widest mb-4">
-                Official School Cooperative
-            </span>
             <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-gray-900 tracking-tight mb-4">
                 WELCOME TO
             </h1>
             <h2 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-blue-600 tracking-tight mb-8">
                 Koperasi SMPK St. Agnes
             </h2>
-            <p class="text-gray-600 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto mb-10">
-                Digitalisasi kebutuhan akademik SMPK Santa Agnes Surabaya. Cepat, transparan, dan mudah diakses oleh seluruh siswa, guru, dan orang tua.
-            </p>
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <a href="{{ route('explore') }}" class="w-full sm:w-auto bg-gray-900 text-white px-8 py-4 rounded-full font-semibold hover:bg-blue-600 transition shadow-lg text-sm">
                     Jelajahi Katalog Barang
@@ -29,7 +23,7 @@
         <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div class="flex items-center justify-between mb-8">
                 <h3 class="text-xl font-bold text-gray-900">Kategori Utama</h3>
-                <a href="{{ route('explore') }}" class="text-sm font-semibold text-blue-600 hover:underline">Lihat Semua Katalog &rarr;</a>
+                <a href="{{ route('explore') }}" class="text-sm font-semibold text-blue-600 hover:underline">Lihat Semua Katalog</a>
             </div>
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
                 @foreach($categories as $category)
@@ -51,7 +45,7 @@
                     <h3 class="text-xl font-bold text-gray-900">Produk Terbaru</h3>
                     <p class="text-sm text-gray-500">Perlengkapan sekolah terpopuler dan siap dipesan.</p>
                 </div>
-                <a href="{{ route('explore') }}" class="text-sm font-semibold text-blue-600 hover:underline">Lihat Semua &rarr;</a>
+                <a href="{{ route('explore') }}" class="text-sm font-semibold text-blue-600 hover:underline">Lihat Semua</a>
             </div>
 
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -68,7 +62,7 @@
                         </div>
                         <div class="flex items-center justify-between pt-3 border-t border-gray-100">
                             <span class="font-bold text-gray-900 text-sm">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
-                            <a href="{{ route('explore') }}" class="text-xs font-semibold text-blue-600 hover:underline">Detail &rarr;</a>
+                            <a href="{{ route('explore') }}" class="text-xs font-semibold text-blue-600 hover:underline">Detail</a>
                         </div>
                     </div>
                 </div>
@@ -86,15 +80,15 @@
                 </p>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
                     <div class="bg-white/80 p-6 rounded-2xl border border-white">
-                        <h4 class="font-bold text-gray-900 mb-2">⚡ Cepat & Praktis</h4>
+                        <h4 class="font-bold text-gray-900 mb-2">Cepat & Praktis</h4>
                         <p class="text-xs text-gray-500">Cek persediaan stok barang kapan saja tanpa perlu datang langsung ke sekolah.</p>
                     </div>
                     <div class="bg-white/80 p-6 rounded-2xl border border-white">
-                        <h4 class="font-bold text-gray-900 mb-2">🏷️ Harga Resmi</h4>
+                        <h4 class="font-bold text-gray-900 mb-2">Harga Resmi</h4>
                         <p class="text-xs text-gray-500">Seluruh harga produk sesuai dengan standar penetapan sekolah dan transparan.</p>
                     </div>
                     <div class="bg-white/80 p-6 rounded-2xl border border-white">
-                        <h4 class="font-bold text-gray-900 mb-2">🎒 Terlengkap</h4>
+                        <h4 class="font-bold text-gray-900 mb-2">Terlengkap</h4>
                         <p class="text-xs text-gray-500">Menyediakan seragam resmi, modul pembelajaran, atribut, hingga makanan ringan.</p>
                     </div>
                 </div>

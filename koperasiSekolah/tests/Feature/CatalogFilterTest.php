@@ -43,4 +43,14 @@ class CatalogFilterTest extends TestCase
             ->assertSee('Buku Tulis')
             ->assertDontSee('Seragam Putih');
     }
+
+    public function test_home_page_uses_school_logo_and_omits_removed_hero_copy(): void
+    {
+        $this->get(route('home'))
+            ->assertOk()
+            ->assertSee('images/Logo_Sekolah.png')
+            ->assertDontSee('Official School Cooperative')
+            ->assertDontSee('Digitalisasi kebutuhan akademik SMPK Santa Agnes Surabaya. Cepat, transparan, dan mudah diakses oleh seluruh siswa, guru, dan orang tua.')
+            ->assertDontSee('&rarr;');
+    }
 }

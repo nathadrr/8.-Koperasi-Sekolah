@@ -7,6 +7,7 @@ use App\Http\Controllers\Public\CartController;
 use App\Http\Controllers\Admin\InventoryController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\TransactionController;
+use App\Http\Controllers\Admin\TransactionExportController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MidtransController;
 
@@ -67,6 +68,11 @@ Route::middleware(['auth'])->group(function () {
 
             // Laporan & Manajemen Transaksi
             Route::get('reports', [TransactionController::class, 'report'])->name('reports');
+            Route::get('reports/export/{format}', TransactionExportController::class)
+                ->whereIn('format', ['csv', 'xlsx'])
+                ->name('reports.export');
+            Route::post('transactions/sync-pending', [TransactionController::class, 'syncPendingTransactions'])
+                ->name('transactions.syncPending');
             Route::patch('transactions/{transaction}/status', [TransactionController::class, 'updateStatus'])->name('transactions.updateStatus');
         });
 

@@ -57,6 +57,10 @@
                 <h3 class="font-semibold text-slate-900">Daftar Transaksi</h3>
                 <p class="mt-1 text-xs text-slate-500">{{ $transactions->total() }} transaksi ditemukan</p>
             </div>
+            <div class="flex gap-2">
+                <a href="{{ route('admin.reports.export', array_merge(['format' => 'csv'], request()->only(['status', 'date']))) }}" class="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50">Ekspor CSV</a>
+                <a href="{{ route('admin.reports.export', array_merge(['format' => 'xlsx'], request()->only(['status', 'date']))) }}" class="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50">Ekspor XLSX</a>
+            </div>
         </div>
         <div class="overflow-x-auto">
             <table class="w-full min-w-[1050px] text-left text-sm">

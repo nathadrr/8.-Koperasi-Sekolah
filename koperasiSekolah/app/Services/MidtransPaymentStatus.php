@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Transaction;
 use App\Models\TransactionPaymentAttempt;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Midtrans\Config;
@@ -14,21 +15,32 @@ class MidtransPaymentStatus
 {
     public function syncPendingForUser(User $user): void
     {
+        $this->syncPendingQuery(Transaction::query()->where('user_id', $user->id));
+    }
+
+    public function syncPendingTransactions(): array
+    {
+        return $this->syncPendingQuery(Transaction::query());
+    }
+
+    private function syncPendingQuery(Builder $transactions): array
+    {
         $serverKey = config('services.midtrans.server_key');
 
         if (!$serverKey) {
-            return;
+            return ['checked' => 0, 'failed' => 0];
         }
 
         Config::$serverKey = $serverKey;
         Config::$isProduction = (bool) config('services.midtrans.is_production');
+        $summary = ['checked' => 0, 'failed' => 0];
 
-        Transaction::query()
-            ->where('user_id', $user->id)
+        $transactions
             ->where('payment_method', 'midtrans')
             ->where('status', 'pending')
             ->with('paymentAttempts')
-            ->each(function (Transaction $transaction): void {
+            ->each(function (Transaction $transaction) use (&$summary): void {
+                $summary['checked']++;
                 $attempts = $transaction->paymentAttempts;
                 $orderIds = $attempts->isEmpty()
                     ? [$transaction->transaction_code]
@@ -52,6 +64,7 @@ class MidtransPaymentStatus
                         }
 
                         $hasUnknownPayment = true;
+                        $summary['failed']++;
                         Log::warning('Could not refresh a pending Midtrans payment.', [
                             'order_id' => $orderId,
                             'error_code' => $exception->getCode(),
@@ -65,6 +78,7 @@ class MidtransPaymentStatus
                         || round((float) $status->gross_amount, 2) !== round((float) $transaction->total_price, 2)
                     ) {
                         $hasUnknownPayment = true;
+                        $summary['failed']++;
                         Log::warning('Midtrans status did not match the local transaction.', [
                             'order_id' => $orderId,
                             'transaction_id' => $transaction->id,
@@ -95,6 +109,7 @@ class MidtransPaymentStatus
                         }
                     } else {
                         $hasUnknownPayment = true;
+                        $summary['failed']++;
                     }
                 }
 
@@ -136,6 +151,8 @@ class MidtransPaymentStatus
                     }
                 });
             });
+
+        return $summary;
     }
 
     public function applyVerifiedStatus(

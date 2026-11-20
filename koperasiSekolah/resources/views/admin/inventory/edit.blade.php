@@ -6,7 +6,7 @@
 @section('content')
     <div class="mx-auto max-w-3xl">
         <div class="mb-6">
-            <a href="{{ route('admin.inventory.index') }}" class="text-sm font-semibold text-blue-600 hover:underline">&larr; Kembali ke produk</a>
+            <a href="{{ route('admin.inventory.index') }}" class="text-sm font-semibold text-blue-600 hover:underline">Kembali ke produk</a>
             <h2 class="mt-3 text-xl font-bold tracking-tight text-slate-900">Edit Produk</h2>
             <p class="mt-1 text-sm text-slate-500">Perbarui informasi {{ $product->name }}.</p>
         </div>

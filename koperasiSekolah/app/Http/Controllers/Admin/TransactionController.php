@@ -77,6 +77,29 @@ class TransactionController extends Controller
         return view('admin.reports', compact('transactions', 'totalRevenue', 'totalTransactions', 'pendingCount', 'completedCount'));
     }
 
+    public function syncPendingTransactions(MidtransPaymentStatus $paymentStatus)
+    {
+        if (! config('services.midtrans.server_key')) {
+            return redirect()->route('admin.dashboard')
+                ->with('error', 'Server Key Midtrans belum dikonfigurasi. Status transaksi tidak dapat disinkronkan.');
+        }
+
+        $summary = $paymentStatus->syncPendingTransactions();
+
+        if ($summary['failed'] > 0) {
+            return redirect()->route('admin.dashboard')->with(
+                'error',
+                "Sinkronisasi memeriksa {$summary['checked']} transaksi. {$summary['failed']} pemeriksaan status gagal; lihat log aplikasi untuk detail."
+            );
+        }
+
+        $message = $summary['checked'] > 0
+            ? "{$summary['checked']} transaksi pending Midtrans berhasil diperiksa."
+            : 'Tidak ada transaksi pending Midtrans yang perlu diperiksa.';
+
+        return redirect()->route('admin.dashboard')->with('success', $message);
+    }
+
     // Update Status Transaksi oleh Admin
     public function updateStatus(Request $request, Transaction $transaction)
     {
